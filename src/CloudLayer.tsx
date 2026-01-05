@@ -1,5 +1,4 @@
 import { Cloud, Clouds } from "@react-three/drei";
-import { useMemo } from "react";
 import * as THREE from "three";
 
 const FALLBACK_DATA_URL =
@@ -49,24 +48,21 @@ function createCloudTexture() {
 }
 
 export default function CloudLayer() {
-  const cloudTexture = useMemo(createCloudTexture, []);
-
   return (
     <Clouds
-      texture={cloudTexture}
       material={THREE.MeshLambertMaterial}
-      limit={120}
+      limit={400}
       range={90}
-      position={[0, 6, -10]}
+      position={[0, 20, -10]}
       frustumCulled={false}
     >
       <Cloud
         segments={26}
         bounds={[18, 6, 10]}
-        scale={[1.2, 0.7, 1]}
+        scale={[4, 3, 3]}
         volume={13}
-        opacity={0.7}
-        speed={0.1}
+        opacity={1}
+        speed={0.2}
         color="#3a5b82"
         position={[-18, 6, -8]}
       />
