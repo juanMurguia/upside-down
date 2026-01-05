@@ -71,7 +71,7 @@ function SkyDome() {
     <mesh scale={500} renderOrder={-100}>
       <sphereGeometry args={[1, 64, 64]} />
       <meshBasicMaterial
-        color="#02040b"
+        color="#073a5f"
         side={THREE.BackSide}
         depthWrite={false}
         depthTest={false}
@@ -87,14 +87,25 @@ function Scene() {
       {/* Sky Dome */}
       <SkyDome />
       {/* Fog */}
-      <fogExp2 attach="fog" args={["#05060d", 0.001]} />
+      <fogExp2 attach="fog" args={["#073a5f", 0.005]} />
       {/* Ambient Lighting */}
-      <ambientLight intensity={0.1} color="#0d1117" />
+      <ambientLight intensity={0.03} color="#0b1020" />
       {/* Blue Directional Light */}
-      <directionalLight position={[0, 40, 0]} intensity={0.5} color="#4488ff" />
-      {/* Scene Elements */}
+      <directionalLight
+        position={[10, 30, 10]}
+        intensity={0.6}
+        color="#2f6bff"
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />{" "}
+      <directionalLight
+        position={[-20, 10, -20]}
+        intensity={0.15}
+        color="#111122"
+      />
       <UpsideDownParticles />
-      <Clouds position={[0, 8, -15]} limit={10} range={40} />{" "}
+      <Clouds position={[0, 6, 0]} limit={10} range={50} />{" "}
       <Sparkles
         count={300}
         scale={100}
@@ -109,12 +120,18 @@ function Scene() {
         receiveShadow
       >
         <planeGeometry args={[2000, 2000]} />
-        <meshStandardMaterial color="#0a0a0f" roughness={0.9} metalness={0.1} />
+        <meshStandardMaterial
+          color="#07070c"
+          roughness={1}
+          metalness={0}
+          emissive="#02020a"
+          emissiveIntensity={0.2}
+        />{" "}
       </mesh>
       {/* Post-processing Effects */}
       <EffectComposer>
         <Bloom
-          intensity={2}
+          intensity={1}
           luminanceThreshold={0.1}
           luminanceSmoothing={0.9}
         />
@@ -129,7 +146,18 @@ function Scene() {
 export default function App() {
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#000" }}>
-      <Canvas camera={{ position: [0, 0, 40], fov: 75 }}>
+      <Canvas
+        shadows
+        dpr={[1, 2]}
+        camera={{ position: [0, 2, 35], fov: 55 }}
+        gl={{
+          antialias: true,
+          powerPreference: "high-performance",
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.0,
+          outputColorSpace: THREE.SRGBColorSpace,
+        }}
+      >
         <OrbitControls
           enablePan={true}
           enableRotate={false}
