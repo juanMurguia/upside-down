@@ -66,64 +66,15 @@ function UpsideDownParticles() {
   );
 }
 
-// Lightning Bolts
-function Lightning() {
-  const lightningRefs = useRef<(THREE.Mesh | null)[]>([]);
-
-  useFrame(() => {
-    lightningRefs.current.forEach((bolt) => {
-      if (bolt) {
-        const flash = Math.random() > 0.97;
-        bolt.visible = flash;
-      }
-    });
-  });
-
-  const boltPositions = useMemo(() => {
-    return Array.from({ length: 5 }, () => ({
-      x: (Math.random() - 0.5) * 60,
-      y: Math.random() * 40 - 20,
-      z: (Math.random() - 0.5) * 60,
-      rotation: Math.random() * Math.PI,
-    }));
-  }, []);
-
+function SkyDome() {
   return (
-    <>
-      {boltPositions.map((pos, i) => (
-        <mesh
-          key={i}
-          ref={(el) => (lightningRefs.current[i] = el)}
-          position={[pos.x, pos.y, pos.z]}
-          rotation={[0, 0, pos.rotation]}
-        >
-          <cylinderGeometry args={[0.1, 0.1, 30, 8]} />
-          <meshStandardMaterial
-            color="#4488ff"
-            emissive="#4488ff"
-            emissiveIntensity={3}
-          />
-        </mesh>
-      ))}
-    </>
-  );
-}
-
-function VolumetricBeam() {
-  return (
-    <mesh
-      position={[0, 11, 0]}
-      rotation={[-Math.PI / 2, 0, 0]}
-      renderOrder={10}
-    >
-      {/* radius, height */}
-      <coneGeometry args={[6, 22, 64, 1, true]} />
+    <mesh scale={500} renderOrder={-100}>
+      <sphereGeometry args={[1, 64, 64]} />
       <meshBasicMaterial
-        color="#ff3333"
-        transparent
-        opacity={0.1}
+        color="#02040b"
+        side={THREE.BackSide}
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        depthTest={false}
       />
     </mesh>
   );
@@ -133,9 +84,10 @@ function VolumetricBeam() {
 function Scene() {
   return (
     <>
-      <color attach="background" args={["#02040b"]} />
+      {/* Sky Dome */}
+      <SkyDome />
       {/* Fog */}
-      <fogExp2 attach="fog" args={["#05060d", 0.01]} />
+      <fogExp2 attach="fog" args={["#05060d", 0.001]} />
       {/* Ambient Lighting */}
       <ambientLight intensity={0.1} color="#0d1117" />
       {/* Blue Directional Light */}
