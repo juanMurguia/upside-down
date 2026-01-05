@@ -22,22 +22,22 @@ function createCloudTexture() {
   }
 
   ctx.clearRect(0, 0, size, size);
-  ctx.globalCompositeOperation = "lighter";
+  ctx.globalCompositeOperation = "source-over";
 
-  for (let i = 0; i < 7; i++) {
-    const x = size * (0.2 + Math.random() * 0.6);
-    const y = size * (0.25 + Math.random() * 0.5);
-    const radius = size * (0.18 + Math.random() * 0.2);
+  for (let i = 0; i < 9; i++) {
+    const x = size * (0.18 + Math.random() * 0.64);
+    const y = size * (0.2 + Math.random() * 0.6);
+    const radius = size * (0.2 + Math.random() * 0.24);
     const gradient = ctx.createRadialGradient(
       x,
       y,
-      radius * 0.2,
+      radius * 0.05,
       x,
       y,
       radius
     );
-    gradient.addColorStop(0, "rgba(255,255,255,0.9)");
-    gradient.addColorStop(0.6, "rgba(255,255,255,0.4)");
+    gradient.addColorStop(0, "rgba(255,255,255,0.95)");
+    gradient.addColorStop(0.5, "rgba(255,255,255,0.5)");
     gradient.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = gradient;
     ctx.beginPath();
@@ -58,55 +58,56 @@ export default function CloudLayer() {
       limit={120}
       range={90}
       position={[0, 6, -10]}
+      frustumCulled={false}
     >
       <Cloud
         segments={26}
         bounds={[18, 6, 10]}
         scale={[1.2, 0.7, 1]}
-        volume={12}
-        opacity={0.5}
+        volume={13}
+        opacity={0.7}
         speed={0.1}
-        color="#2b4a66"
+        color="#3a5b82"
         position={[-18, 6, -8]}
       />
       <Cloud
         segments={30}
         bounds={[20, 7, 12]}
         scale={[1.4, 0.8, 1]}
-        volume={14}
-        opacity={0.55}
+        volume={15}
+        opacity={0.75}
         speed={0.08}
-        color="#223a54"
+        color="#2c4c6b"
         position={[12, 8, -12]}
       />
       <Cloud
         segments={22}
         bounds={[16, 5, 8]}
         scale={[1.1, 0.6, 1]}
-        volume={10}
-        opacity={0.45}
+        volume={12}
+        opacity={0.65}
         speed={0.12}
-        color="#18263a"
+        color="#1f3148"
         position={[2, 10, -24]}
       />
       <Cloud
         segments={18}
         bounds={[14, 5, 7]}
         scale={[0.9, 0.6, 1]}
-        volume={9}
-        opacity={0.4}
+        volume={10}
+        opacity={0.6}
         speed={0.1}
-        color="#6b2330"
+        color="#b23a48"
         position={[22, 9, -30]}
       />
       <Cloud
         segments={20}
         bounds={[16, 6, 8]}
         scale={[1, 0.65, 1]}
-        volume={11}
-        opacity={0.45}
+        volume={12}
+        opacity={0.65}
         speed={0.1}
-        color="#7a2a36"
+        color="#c0434f"
         position={[-24, 7, -26]}
       />
     </Clouds>

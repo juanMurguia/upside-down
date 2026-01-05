@@ -19,11 +19,7 @@ export default function App() {
           outputColorSpace: THREE.SRGBColorSpace,
         }}
       >
-        <OrbitControls
-          enablePan={true}
-          enableRotate={false}
-          enableZoom={false}
-        />
+        <OrbitControls enablePan={true} enableRotate={true} enableZoom={true} />
         <Scene />
       </Canvas>
     </div>

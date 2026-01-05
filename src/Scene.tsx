@@ -5,6 +5,7 @@ import {
   Noise,
   Vignette,
 } from "@react-three/postprocessing";
+import { Suspense } from "react";
 import CloudLayer from "./CloudLayer";
 import RedStormLights from "./RedStormLights";
 import SkyDome from "./SkyDome";
@@ -30,7 +31,9 @@ export default function Scene() {
         color="#111827"
       />
       <UpsideDownParticles />
-      <CloudLayer />
+      <Suspense fallback={null}>
+        <CloudLayer />
+      </Suspense>
       <RedStormLights />
       <Sparkles
         count={420}
