@@ -106,7 +106,7 @@ export default function App() {
     if (!activeTrack) {
       return "";
     }
-    return `My 80s song is ${activeTrack.title} (${activeTrack.year}). What's yours?`;
+    return `My 80s song to escape from Vecna is:  ${activeTrack.title} (${activeTrack.year}).`;
   }, [activeTrack]);
 
   useEffect(() => {
@@ -357,7 +357,7 @@ export default function App() {
           <div className="ui-stack">
             <div className="ui-panel ui-panel--cassette">
               <div className="cassette-header">
-                <div className="ui-title">Escape Vecna's Curse</div>
+                <div className="ui-title">Escape Vecna</div>
                 <div className="ui-subtitle">
                   Enter your birthdate to find the one song that will pull you
                   back from the Upside Down.
@@ -504,8 +504,10 @@ export default function App() {
       {shareOpen ? (
         <div className="modal-backdrop" role="dialog" aria-modal="true">
           <div className="modal">
-            <div className="modal-title">Share your result</div>
-            <div className="modal-caption">{shareCaption}</div>
+            <div>
+              <div className="modal-title">Share your result</div>
+              <div className="modal-caption">{shareCaption}</div>
+            </div>
             <div className="modal-actions">
               <button
                 className="primary-button"
