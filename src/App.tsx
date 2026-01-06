@@ -350,7 +350,11 @@ export default function App() {
         }}
       >
         <MousePanControls limit={2} />
-        <Scene activeTrack={activeTrack} showCard={showCard} />
+        <Scene
+          activeTrack={activeTrack}
+          showCard={showCard}
+          isPlaying={isPlaying}
+        />
       </Canvas>
       <div className="ui-layer">
         {showPanels ? (
