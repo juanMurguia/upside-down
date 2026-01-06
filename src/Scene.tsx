@@ -20,7 +20,11 @@ type SceneProps = {
   isPlaying: boolean;
 };
 
-export default function Scene({ activeTrack, showCard, isPlaying }: SceneProps) {
+export default function Scene({
+  activeTrack,
+  showCard,
+  isPlaying,
+}: SceneProps) {
   const isBright = isPlaying;
 
   return (
@@ -30,7 +34,10 @@ export default function Scene({ activeTrack, showCard, isPlaying }: SceneProps) 
         attach="fog"
         args={isBright ? ["#c9ecff", 0.0011] : ["#360608", 0.002]}
       />
-      <ambientLight intensity={isBright ? 2.6 : 4} color={isBright ? "#f9fbff" : "#ff4b55"} />
+      <ambientLight
+        intensity={isBright ? 2.6 : 4}
+        color={isBright ? "#f9fbff" : "#ff4b55"}
+      />
       {isBright ? null : <SpikeRocks />}
       {isBright ? (
         <>
@@ -119,9 +126,9 @@ export default function Scene({ activeTrack, showCard, isPlaying }: SceneProps) 
       </mesh>
       <EffectComposer>
         <Bloom
-          intensity={isBright ? 0.6 : 1.2}
+          intensity={isBright ? 0.5 : 4}
           luminanceThreshold={isBright ? 0.35 : 0.2}
-          luminanceSmoothing={isBright ? 0.75 : 0.6}
+          luminanceSmoothing={isBright ? 0.75 : 3}
           mipmapBlur
         />
         <Noise opacity={isBright ? 0.02 : 0.1} />

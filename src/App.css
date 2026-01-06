@@ -585,7 +585,7 @@ border-radius: 8px;
     transition: all 0.2s ease;
 }
 
-.floating-controls .player-button,
+.floating-controls .player-button:hover,
 .floating-controls .secondary-button:hover {
   background: var(--accent-soft);
 }

@@ -60,23 +60,18 @@ export default function MusicCard({ track, visible }: MusicCardProps) {
   return (
     <group ref={groupRef} scale={[cardScale, cardScale, cardScale]}>
       <RoundedBox args={[8.2, 5.3, 0.38]} radius={0.45} smoothness={6}>
-        <meshStandardMaterial
-          color="#4e0202"
-          metalness={1}
-          roughness={0.25}
-          emissive="#820d0d"
-          emissiveIntensity={1}
+        <meshStandardMaterial color="#4e0202" metalness={1} roughness={0.25} />
+        <Edges
+          color={new THREE.Color(5, 0.2, 0.3)}
+          linewidth={3}
+          toneMapped={false}
         />
-        <Edges color="#ff0a1f" linewidth={3} />
       </RoundedBox>
       <mesh position={[-1.9, 0.05, 0.25]}>
         <planeGeometry args={[3.4, 3.4]} />
         <meshStandardMaterial map={texture} roughness={0.6} metalness={0.1} />
       </mesh>
-      <mesh position={[-1.9, 0.05, 0.22]}>
-        <planeGeometry args={[3.6, 3.6]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.05} />
-      </mesh>
+
       <Html transform position={[2, 0.3, 0.26]} distanceFactor={7.8}>
         <div className="music-card__html">
           <div className="music-card__label">Preview</div>
