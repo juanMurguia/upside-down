@@ -17,7 +17,7 @@ export default function MusicCard({ track, visible }: MusicCardProps) {
   const { gl, viewport } = useThree();
   const coverUrl = track?.coverUrl ?? DEFAULT_COVER;
   const texture = useTexture(coverUrl);
-  const basePosition = useMemo(() => new THREE.Vector3(0, 4, 8), []);
+  const basePosition = useMemo(() => new THREE.Vector3(0, 2, 24), []);
   const baseRotation = useMemo(() => new THREE.Euler(0, 0, 0), []);
   const cardScale = Math.min(1, viewport.width / 12);
 
@@ -26,16 +26,20 @@ export default function MusicCard({ track, visible }: MusicCardProps) {
     texture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
   }, [gl, texture]);
 
+  const pointer = useRef({ x: 0, y: 0 });
+
   useFrame((state) => {
-    if (!groupRef.current || !visible) {
-      return;
-    }
+    if (!groupRef.current || !visible) return;
+
+    // Smooth pointer tracking
+    pointer.current.x += (state.pointer.x - pointer.current.x) * 0.05;
+    pointer.current.y += (state.pointer.y - pointer.current.y) * 0.05;
 
     const t = state.clock.getElapsedTime();
     const floatY = Math.sin(t * 0.9) * 0.6;
     const drift = Math.sin(t * 0.35) * 0.1;
-    const pointerX = THREE.MathUtils.clamp(state.pointer.x, -0.7, 0.7);
-    const pointerY = THREE.MathUtils.clamp(state.pointer.y, -0.5, 0.5);
+    const pointerX = THREE.MathUtils.clamp(pointer.current.x, -0.7, 0.7);
+    const pointerY = THREE.MathUtils.clamp(pointer.current.y, -0.5, 0.5);
 
     groupRef.current.position.set(
       basePosition.x,
@@ -57,13 +61,13 @@ export default function MusicCard({ track, visible }: MusicCardProps) {
     <group ref={groupRef} scale={[cardScale, cardScale, cardScale]}>
       <RoundedBox args={[8.2, 5.3, 0.38]} radius={0.45} smoothness={6}>
         <meshStandardMaterial
-          color="#10131d"
+          color="#4e0202"
           metalness={0.6}
           roughness={0.25}
-          emissive="#0a0f1d"
-          emissiveIntensity={0.4}
+          emissive="#4e0202"
+          emissiveIntensity={0.5}
         />
-        <Edges color="#5a78a8" />
+        <Edges color="#930813" />
       </RoundedBox>
       <mesh position={[-1.9, 0.05, 0.25]}>
         <planeGeometry args={[3.4, 3.4]} />
@@ -71,11 +75,7 @@ export default function MusicCard({ track, visible }: MusicCardProps) {
       </mesh>
       <mesh position={[-1.9, 0.05, 0.22]}>
         <planeGeometry args={[3.6, 3.6]} />
-        <meshBasicMaterial
-          color="#ffffff"
-          transparent
-          opacity={0.05}
-        />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.05} />
       </mesh>
       <Html transform position={[1.7, 0.3, 0.26]} distanceFactor={7.8}>
         <div className="music-card__html">

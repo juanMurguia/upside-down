@@ -87,6 +87,7 @@ export default function App() {
   const isPreviewAvailable = Boolean(activeTrack?.previewUrl);
   const showCard = Boolean(activeTrack && !isLoading);
   const showResult = Boolean(activeTrack && !isLoading && musicYear);
+  const showPanels = !showResult;
   const shareCaption = useMemo(() => {
     if (!activeTrack) {
       return "";
@@ -223,120 +224,79 @@ export default function App() {
         <Scene activeTrack={activeTrack} showCard={showCard} />
       </Canvas>
       <div className="ui-layer">
-        <div className="ui-stack">
-          <div className="ui-panel">
-            <div className="ui-title">Your 80s Song</div>
-            <div className="ui-subtitle">
-              Drop your birthdate to tune into your retro frequency.
-            </div>
-            <label className="ui-label" htmlFor="birthdate">
-              Birthdate
-            </label>
-            <input
-              id="birthdate"
-              type="date"
-              value={birthdate}
-              onChange={(event) => {
-                setBirthdate(event.target.value);
-                setError("");
-              }}
-              className="ui-input"
-            />
-            {error ? <div className="ui-error">{error}</div> : null}
-            <div className="ui-actions">
-              <button
-                className="primary-button"
-                type="button"
-                onClick={handleGenerate}
-                disabled={isLoading}
-              >
-                Generate
-              </button>
-              {hasGenerated ? (
+        {showPanels ? (
+          <div className="ui-stack">
+            <div className="ui-panel">
+              <div className="ui-title">Your 80s Song</div>
+              <div className="ui-subtitle">
+                Drop your birthdate to tune into your retro frequency.
+              </div>
+              <label className="ui-label" htmlFor="birthdate">
+                Birthdate
+              </label>
+              <input
+                id="birthdate"
+                type="date"
+                value={birthdate}
+                onChange={(event) => {
+                  setBirthdate(event.target.value);
+                  setError("");
+                }}
+                className="ui-input"
+              />
+              {error ? <div className="ui-error">{error}</div> : null}
+              <div className="ui-actions">
                 <button
-                  className="link-button"
+                  className="primary-button"
                   type="button"
                   onClick={handleGenerate}
                   disabled={isLoading}
                 >
-                  Regenerate
+                  Generate
                 </button>
-              ) : null}
-            </div>
-          </div>
-
-          {isLoading ? (
-            <div className="ui-panel ui-panel--result">
-              <div className="loading-title">Tuning the signal...</div>
-              <div className="skeleton-line" />
-              <div className="skeleton-line skeleton-line--short" />
-              <div className="skeleton-block" />
-            </div>
-          ) : null}
-
-          {showResult ? (
-            <div className="ui-panel ui-panel--result">
-              <div className="result-title">
-                Your 80s year: <span>{musicYear}</span>
-              </div>
-              <div className="result-track">
-                {activeTrack?.title} - {activeTrack?.artist}
-              </div>
-              <div className="player">
-                <div className="player-row">
+                {hasGenerated ? (
                   <button
-                    className="player-button"
+                    className="link-button"
                     type="button"
-                    onClick={handleTogglePlay}
-                    disabled={!isPreviewAvailable}
+                    onClick={handleGenerate}
+                    disabled={isLoading}
                   >
-                    {isPlaying ? "Pause" : "Play"}
+                    Regenerate
                   </button>
-                  <div className="player-meta">
-                    <div className="player-time">
-                      {formatTime(progress)}
-                    </div>
-                    <div className="player-duration">
-                      {formatTime(PREVIEW_DURATION)}
-                    </div>
-                  </div>
-                </div>
-                <div className="player-bar">
-                  <div
-                    className="player-progress"
-                    style={{
-                      width: `${(progress / PREVIEW_DURATION) * 100}%`,
-                    }}
-                  />
-                </div>
-                {!isPreviewAvailable ? (
-                  <div className="player-fallback">
-                    <div className="player-unavailable">
-                      Preview not available.
-                    </div>
-                    <a
-                      className="secondary-button"
-                      href={activeTrack?.spotifyUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Open in Spotify
-                    </a>
-                  </div>
                 ) : null}
               </div>
-              <div className="share-row">
-                <button
-                  className="secondary-button"
-                  type="button"
-                  onClick={() => setShareOpen(true)}
-                >
-                  Share
-                </button>
-              </div>
             </div>
-          ) : null}
-        </div>
+
+            {isLoading ? (
+              <div className="ui-panel ui-panel--result">
+                <div className="loading-title">Tuning the signal...</div>
+                <div className="skeleton-line" />
+                <div className="skeleton-line skeleton-line--short" />
+                <div className="skeleton-block" />
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        {showResult ? (
+          <div className="floating-controls">
+            <button
+              className="player-button"
+              type="button"
+              onClick={handleTogglePlay}
+              disabled={!isPreviewAvailable}
+            >
+              {isPlaying ? "Pause" : "Play"}
+            </button>
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => setShareOpen(true)}
+            >
+              Share
+            </button>
+          </div>
+        ) : null}
       </div>
       {shareOpen ? (
         <div className="modal-backdrop" role="dialog" aria-modal="true">

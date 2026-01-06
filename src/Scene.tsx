@@ -92,11 +92,7 @@ export default function Scene({ activeTrack, showCard }: SceneProps) {
         />
       </mesh>
       <EffectComposer>
-        <Bloom
-          intensity={1.15}
-          luminanceThreshold={0.08}
-          luminanceSmoothing={0.9}
-        />
+        <Bloom intensity={5} luminanceThreshold={1} luminanceSmoothing={0.9} />
         <Noise opacity={0.1} />
         <Vignette darkness={0.75} offset={0.3} />
       </EffectComposer>

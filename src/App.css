@@ -297,6 +297,23 @@
   margin-top: 1rem;
 }
 
+.floating-controls {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(1.25rem, 4vw, 3rem);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(8, 6, 12, 0.72);
+  border: 1px solid rgba(255, 70, 80, 0.4);
+  box-shadow: 0 20px 40px rgba(6, 4, 10, 0.45),
+    0 0 30px rgba(255, 40, 60, 0.35);
+  pointer-events: auto;
+}
+
 .modal-backdrop {
   position: absolute;
   inset: 0;
@@ -424,5 +441,10 @@
 
   .link-button {
     text-align: center;
+  }
+
+  .floating-controls {
+    width: min(92vw, 360px);
+    justify-content: space-between;
   }
 }
