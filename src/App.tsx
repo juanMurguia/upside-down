@@ -1,5 +1,6 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
+import { Pause, Play, Share2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import Scene from "./Scene";
@@ -290,15 +291,21 @@ export default function App() {
               type="button"
               onClick={handleTogglePlay}
               disabled={!isPreviewAvailable}
+              aria-label={isPlaying ? "Pause preview" : "Play preview"}
             >
-              {isPlaying ? "Pause" : "Play"}
+              {isPlaying ? (
+                <Pause size={18} strokeWidth={2.2} />
+              ) : (
+                <Play size={18} strokeWidth={2.2} />
+              )}
             </button>
             <button
               className="secondary-button"
               type="button"
               onClick={() => setShareOpen(true)}
+              aria-label="Share"
             >
-              Share
+              <Share2 size={18} strokeWidth={2.2} />
             </button>
           </div>
         ) : null}

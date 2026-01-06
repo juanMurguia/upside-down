@@ -10,6 +10,7 @@ import CloudLayer from "./CloudLayer";
 import MusicCard from "./MusicCard";
 import RedStormLights from "./RedStormLights";
 import SkyDome from "./SkyDome";
+import SpikeRocks from "./SpikeRocks";
 import UpsideDownParticles from "./UpsideDownParticles";
 import type { Track } from "./tracks";
 
@@ -24,6 +25,7 @@ export default function Scene({ activeTrack, showCard }: SceneProps) {
       <SkyDome />
       <fogExp2 attach="fog" args={["#061f36", 0.002]} />
       <ambientLight intensity={Math.PI / 1.5} color="#dbe6ff" />
+      <SpikeRocks />
       <spotLight
         position={[0, 40, 0]}
         decay={0}
