@@ -1,8 +1,13 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import Scene from "./Scene";
+import { clampYearTo80s, pickTrackForYear, type Track } from "./tracks";
+import "./App.css";
+
+const MUSIC_AGE = 16;
+const PREVIEW_DURATION = 30;
 
 // Custom Pan Controls Component
 function MousePanControls({ limit = 2 }) {
@@ -49,7 +54,157 @@ function MousePanControls({ limit = 2 }) {
 }
 
 // App Component
+const formatTime = (time: number) => {
+  const clamped = Math.max(0, Math.min(PREVIEW_DURATION, Math.floor(time)));
+  const minutes = Math.floor(clamped / 60);
+  const seconds = clamped % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
+const computeMusicYear = (birthdate: string) => {
+  const yearText = birthdate.split("-")[0];
+  const birthYear = Number(yearText);
+  if (!Number.isFinite(birthYear)) {
+    return null;
+  }
+  return clampYearTo80s(birthYear + MUSIC_AGE);
+};
+
 export default function App() {
+  const [birthdate, setBirthdate] = useState("");
+  const [error, setError] = useState("");
+  const [musicYear, setMusicYear] = useState<number | null>(null);
+  const [activeTrack, setActiveTrack] = useState<Track | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasGenerated, setHasGenerated] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareNotice, setShareNotice] = useState("");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const loadingTimeoutRef = useRef<number | null>(null);
+
+  const isPreviewAvailable = Boolean(activeTrack?.previewUrl);
+  const showCard = Boolean(activeTrack && !isLoading);
+  const showResult = Boolean(activeTrack && !isLoading && musicYear);
+  const shareCaption = useMemo(() => {
+    if (!activeTrack) {
+      return "";
+    }
+    return `My 80s song is ${activeTrack.title} (${activeTrack.year}). What's yours?`;
+  }, [activeTrack]);
+
+  useEffect(() => {
+    return () => {
+      if (loadingTimeoutRef.current !== null) {
+        window.clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+    audio.pause();
+    audio.currentTime = 0;
+    setProgress(0);
+    setIsPlaying(false);
+    audio.load();
+  }, [activeTrack?.previewUrl]);
+
+  const handleGenerate = () => {
+    if (!birthdate) {
+      setError("Please enter your birthdate.");
+      return;
+    }
+
+    const year = computeMusicYear(birthdate);
+    if (!year) {
+      setError("Please enter a valid birthdate.");
+      return;
+    }
+
+    setError("");
+    setHasGenerated(true);
+    setIsLoading(true);
+    setShareOpen(false);
+    setMusicYear(null);
+    setActiveTrack(null);
+    setShareNotice("");
+
+    if (loadingTimeoutRef.current !== null) {
+      window.clearTimeout(loadingTimeoutRef.current);
+    }
+
+    loadingTimeoutRef.current = window.setTimeout(() => {
+      const selectedTrack = pickTrackForYear(year);
+      setMusicYear(year);
+      setActiveTrack(selectedTrack);
+      setIsLoading(false);
+    }, 800);
+  };
+
+  const handleTogglePlay = () => {
+    if (!isPreviewAvailable) {
+      return;
+    }
+
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    audio
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+      })
+      .catch(() => {
+        setIsPlaying(false);
+      });
+  };
+
+  const handleTimeUpdate = () => {
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+
+    const clamped = Math.min(audio.currentTime, PREVIEW_DURATION);
+    setProgress(clamped);
+
+    if (audio.currentTime >= PREVIEW_DURATION) {
+      audio.pause();
+      audio.currentTime = PREVIEW_DURATION;
+      setIsPlaying(false);
+    }
+  };
+
+  const handleShareCopy = async (value: string) => {
+    if (!value) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(value);
+      setShareNotice("Copied.");
+    } catch {
+      setShareNotice("Copy failed.");
+    }
+  };
+
+  const handleShareLink = () => {
+    handleShareCopy(window.location.href);
+  };
+
   return (
     <div className="app">
       <Canvas
@@ -65,8 +220,169 @@ export default function App() {
         }}
       >
         <MousePanControls limit={2} />
-        <Scene />
+        <Scene activeTrack={activeTrack} showCard={showCard} />
       </Canvas>
+      <div className="ui-layer">
+        <div className="ui-stack">
+          <div className="ui-panel">
+            <div className="ui-title">Your 80s Song</div>
+            <div className="ui-subtitle">
+              Drop your birthdate to tune into your retro frequency.
+            </div>
+            <label className="ui-label" htmlFor="birthdate">
+              Birthdate
+            </label>
+            <input
+              id="birthdate"
+              type="date"
+              value={birthdate}
+              onChange={(event) => {
+                setBirthdate(event.target.value);
+                setError("");
+              }}
+              className="ui-input"
+            />
+            {error ? <div className="ui-error">{error}</div> : null}
+            <div className="ui-actions">
+              <button
+                className="primary-button"
+                type="button"
+                onClick={handleGenerate}
+                disabled={isLoading}
+              >
+                Generate
+              </button>
+              {hasGenerated ? (
+                <button
+                  className="link-button"
+                  type="button"
+                  onClick={handleGenerate}
+                  disabled={isLoading}
+                >
+                  Regenerate
+                </button>
+              ) : null}
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="ui-panel ui-panel--result">
+              <div className="loading-title">Tuning the signal...</div>
+              <div className="skeleton-line" />
+              <div className="skeleton-line skeleton-line--short" />
+              <div className="skeleton-block" />
+            </div>
+          ) : null}
+
+          {showResult ? (
+            <div className="ui-panel ui-panel--result">
+              <div className="result-title">
+                Your 80s year: <span>{musicYear}</span>
+              </div>
+              <div className="result-track">
+                {activeTrack?.title} - {activeTrack?.artist}
+              </div>
+              <div className="player">
+                <div className="player-row">
+                  <button
+                    className="player-button"
+                    type="button"
+                    onClick={handleTogglePlay}
+                    disabled={!isPreviewAvailable}
+                  >
+                    {isPlaying ? "Pause" : "Play"}
+                  </button>
+                  <div className="player-meta">
+                    <div className="player-time">
+                      {formatTime(progress)}
+                    </div>
+                    <div className="player-duration">
+                      {formatTime(PREVIEW_DURATION)}
+                    </div>
+                  </div>
+                </div>
+                <div className="player-bar">
+                  <div
+                    className="player-progress"
+                    style={{
+                      width: `${(progress / PREVIEW_DURATION) * 100}%`,
+                    }}
+                  />
+                </div>
+                {!isPreviewAvailable ? (
+                  <div className="player-fallback">
+                    <div className="player-unavailable">
+                      Preview not available.
+                    </div>
+                    <a
+                      className="secondary-button"
+                      href={activeTrack?.spotifyUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Open in Spotify
+                    </a>
+                  </div>
+                ) : null}
+              </div>
+              <div className="share-row">
+                <button
+                  className="secondary-button"
+                  type="button"
+                  onClick={() => setShareOpen(true)}
+                >
+                  Share
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+      {shareOpen ? (
+        <div className="modal-backdrop" role="dialog" aria-modal="true">
+          <div className="modal">
+            <div className="modal-title">Share your result</div>
+            <div className="modal-caption">{shareCaption}</div>
+            <div className="modal-actions">
+              <button
+                className="primary-button"
+                type="button"
+                onClick={() => handleShareCopy(shareCaption)}
+              >
+                Copy text
+              </button>
+              <button
+                className="secondary-button"
+                type="button"
+                onClick={handleShareLink}
+              >
+                Copy link
+              </button>
+              <button className="ghost-button" type="button" disabled>
+                Coming soon
+              </button>
+            </div>
+            {shareNotice ? (
+              <div className="modal-note">{shareNotice}</div>
+            ) : null}
+            <button
+              className="modal-close"
+              type="button"
+              onClick={() => setShareOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      ) : null}
+      <audio
+        ref={audioRef}
+        src={activeTrack?.previewUrl ?? ""}
+        onTimeUpdate={handleTimeUpdate}
+        onPause={() => setIsPlaying(false)}
+        onEnded={() => setIsPlaying(false)}
+        preload="metadata"
+      />
     </div>
   );
 }

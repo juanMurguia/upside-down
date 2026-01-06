@@ -7,11 +7,18 @@ import {
 } from "@react-three/postprocessing";
 import { Suspense } from "react";
 import CloudLayer from "./CloudLayer";
+import MusicCard from "./MusicCard";
 import RedStormLights from "./RedStormLights";
 import SkyDome from "./SkyDome";
 import UpsideDownParticles from "./UpsideDownParticles";
+import type { Track } from "./tracks";
 
-export default function Scene() {
+type SceneProps = {
+  activeTrack: Track | null;
+  showCard: boolean;
+};
+
+export default function Scene({ activeTrack, showCard }: SceneProps) {
   return (
     <>
       <SkyDome />
@@ -41,9 +48,26 @@ export default function Scene() {
         penumbra={-1}
         intensity={10}
       />
+      <spotLight
+        position={[2, 10, 24]}
+        color="#ff4b55"
+        angle={0.5}
+        penumbra={0.7}
+        intensity={8}
+        decay={1.2}
+        distance={60}
+      />
+      <pointLight
+        position={[8, 6, 20]}
+        color="#7aa7ff"
+        intensity={3.2}
+        decay={1.5}
+        distance={50}
+      />
       <UpsideDownParticles />
       <Suspense fallback={null}>
         <CloudLayer />
+        <MusicCard track={activeTrack} visible={showCard} />
       </Suspense>
       <RedStormLights />
       <Sparkles
