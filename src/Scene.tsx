@@ -15,20 +15,31 @@ export default function Scene() {
   return (
     <>
       <SkyDome />
-      <fogExp2 attach="fog" args={["#061f36", 0.0045]} />
-      <ambientLight intensity={0.04} color="#0b1224" />
-      <directionalLight
-        position={[10, 30, 10]}
-        intensity={0.65}
-        color="#2f6bff"
-        castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+      <fogExp2 attach="fog" args={["#061f36", 0.002]} />
+      <ambientLight intensity={Math.PI / 1.5} color="#dbe6ff" />
+      <spotLight
+        position={[0, 40, 0]}
+        decay={0}
+        distance={45}
+        penumbra={1}
+        intensity={100}
+        color="#7aa7ff"
       />
-      <directionalLight
-        position={[-20, 10, -20]}
-        intensity={0.18}
-        color="#111827"
+      <spotLight
+        position={[-20, 0, 10]}
+        color="#112660"
+        angle={0.2}
+        decay={0}
+        penumbra={-1}
+        intensity={10}
+      />
+      <spotLight
+        position={[20, -40, 10]}
+        color="#112660"
+        angle={0.2}
+        decay={0}
+        penumbra={-1}
+        intensity={10}
       />
       <UpsideDownParticles />
       <Suspense fallback={null}>

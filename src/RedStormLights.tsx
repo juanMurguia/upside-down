@@ -4,10 +4,17 @@ import * as THREE from "three";
 
 const GLOW_COLOR = new THREE.Color("#ff2e3a");
 
-const glowConfigs = [
-  { position: [-20, 6, -24], size: 16, intensity: 2.4, opacity: 0.6 },
-  { position: [16, 8, -28], size: 20, intensity: 2.8, opacity: 0.65 },
-  { position: [4, 12, -38], size: 26, intensity: 3.2, opacity: 0.55 },
+type GlowConfig = {
+  position: [number, number, number];
+  size: number;
+  intensity: number;
+  opacity: number;
+};
+
+const glowConfigs: GlowConfig[] = [
+  { position: [-20, 50, -24], size: 16, intensity: 10.4, opacity: 0.62 },
+  { position: [16, 50, -28], size: 20, intensity: 40.8, opacity: 0.65 },
+  { position: [4, 50, -38], size: 26, intensity: 50.2, opacity: 0.65 },
 ];
 
 function createGlowTexture() {
