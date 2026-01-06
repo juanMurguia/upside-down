@@ -150,7 +150,6 @@
   color: #f7f9ff;
   padding: 0.7rem 0.9rem;
   font-size: 1rem;
-  cursor: pointer;
 }
 
 .ui-input:hover {
@@ -271,6 +270,53 @@
   box-shadow:
     inset 0 0 8px rgba(0, 0, 0, 0.1),
     0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.date-fields {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.4rem 0;
+}
+
+.date-field {
+  width: 72px;
+  height: 36px;
+  border-radius: 12px;
+  border: 2px solid rgba(35, 20, 22, 0.4);
+  background: rgba(255, 255, 255, 0.35);
+  text-align: center;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #231515;
+  caret-color: #231515;
+  box-shadow:
+    inset 0 0 10px rgba(0, 0, 0, 0.08),
+    0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.date-field--year {
+  width: 110px;
+}
+
+.date-field::placeholder {
+  color: rgba(35, 20, 22, 0.45);
+}
+
+.date-field:focus {
+  outline: none;
+  border-color: rgba(255, 80, 90, 0.8);
+  box-shadow:
+    0 0 0 2px rgba(255, 120, 130, 0.35),
+    inset 0 0 12px rgba(255, 255, 255, 0.15);
+}
+
+.date-separator {
+  font-weight: 700;
+  color: rgba(60, 30, 30, 0.7);
+  letter-spacing: 0.05em;
 }
 
 .ui-actions {
@@ -684,5 +730,17 @@
   .floating-controls {
     width: min(92vw, 360px);
     justify-content: space-between;
+  }
+
+  .date-fields {
+    justify-content: space-between;
+  }
+
+  .date-field {
+    width: 64px;
+  }
+
+  .date-field--year {
+    width: 96px;
   }
 }

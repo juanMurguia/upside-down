@@ -1,7 +1,14 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Pause, Play, Share2 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type RefObject,
+} from "react";
 import * as THREE from "three";
 import "./App.css";
 import Scene from "./Scene";
@@ -63,9 +70,8 @@ const formatTime = (time: number) => {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
-const computeMusicYear = (birthdate: string) => {
-  const yearText = birthdate.split("-")[0];
-  const birthYear = Number(yearText);
+const computeMusicYear = (birthdate: Date) => {
+  const birthYear = birthdate.getFullYear();
   if (!Number.isFinite(birthYear)) {
     return null;
   }
@@ -73,7 +79,9 @@ const computeMusicYear = (birthdate: string) => {
 };
 
 export default function App() {
-  const [birthdate, setBirthdate] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthDay, setBirthDay] = useState("");
+  const [birthYear, setBirthYear] = useState("");
   const [error, setError] = useState("");
   const [musicYear, setMusicYear] = useState<number | null>(null);
   const [activeTrack, setActiveTrack] = useState<Track | null>(null);
@@ -85,6 +93,9 @@ export default function App() {
   const [shareNotice, setShareNotice] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const requestIdRef = useRef(0);
+  const dayRef = useRef<HTMLInputElement | null>(null);
+  const monthRef = useRef<HTMLInputElement | null>(null);
+  const yearRef = useRef<HTMLInputElement | null>(null);
 
   const isPreviewAvailable = Boolean(activeTrack?.previewUrl);
   const showCard = Boolean(activeTrack && !isLoading);
@@ -109,13 +120,72 @@ export default function App() {
     audio.load();
   }, [activeTrack?.previewUrl]);
 
+  const sanitizeDigits = (value: string, maxLength: number) =>
+    value.replace(/\D/g, "").slice(0, maxLength);
+
+  const handleFieldChange = (
+    value: string,
+    maxLength: number,
+    setter: (value: string) => void,
+    nextRef?: RefObject<HTMLInputElement | null>
+  ) => {
+    const cleaned = sanitizeDigits(value, maxLength);
+    setter(cleaned);
+    if (cleaned.length === maxLength && nextRef?.current) {
+      nextRef.current.focus();
+    }
+    setError("");
+  };
+
+  const handleFieldKeyDown = (
+    event: KeyboardEvent<HTMLInputElement>,
+    value: string,
+    prevRef?: RefObject<HTMLInputElement | null>
+  ) => {
+    if (event.key === "Backspace" && value.length === 0 && prevRef?.current) {
+      prevRef.current.focus();
+    }
+  };
+
   const handleGenerate = async () => {
-    if (!birthdate) {
+    if (!birthMonth || !birthDay || !birthYear) {
       setError("Please enter your birthdate.");
       return;
     }
 
-    const year = computeMusicYear(birthdate);
+    if (
+      birthMonth.length !== 2 ||
+      birthDay.length !== 2 ||
+      birthYear.length !== 4
+    ) {
+      setError("Please enter a valid birthdate.");
+      return;
+    }
+
+    const month = Number(birthMonth);
+    const day = Number(birthDay);
+    const yearValue = Number(birthYear);
+
+    if (
+      !Number.isFinite(month) ||
+      !Number.isFinite(day) ||
+      !Number.isFinite(yearValue)
+    ) {
+      setError("Please enter a valid birthdate.");
+      return;
+    }
+
+    const candidate = new Date(yearValue, month - 1, day);
+    if (
+      candidate.getFullYear() !== yearValue ||
+      candidate.getMonth() !== month - 1 ||
+      candidate.getDate() !== day
+    ) {
+      setError("Please enter a valid birthdate.");
+      return;
+    }
+
+    const year = computeMusicYear(candidate);
     if (!year) {
       setError("Please enter a valid birthdate.");
       return;
@@ -252,19 +322,73 @@ export default function App() {
                 </div>
               </div>
               <div className="cassette-label">
-                <label className="ui-label" htmlFor="birthdate">
+                <label className="ui-label" htmlFor="birth-day">
                   Birthdate
                 </label>
-                <input
-                  id="birthdate"
-                  type="date"
-                  value={birthdate}
-                  onChange={(event) => {
-                    setBirthdate(event.target.value);
-                    setError("");
-                  }}
-                  className="ui-input ui-input--label"
-                />
+                <div className="date-fields">
+                  <input
+                    id="birth-day"
+                    ref={dayRef}
+                    className="date-field"
+                    inputMode="numeric"
+                    autoComplete="bday-day"
+                    placeholder="DD"
+                    maxLength={2}
+                    value={birthDay}
+                    onChange={(event) =>
+                      handleFieldChange(
+                        event.target.value,
+                        2,
+                        setBirthDay,
+                        monthRef
+                      )
+                    }
+                    onKeyDown={(event) =>
+                      handleFieldKeyDown(event, birthDay)
+                    }
+                    aria-label="Birth day"
+                  />
+                  <span className="date-separator">/</span>
+                  <input
+                    id="birth-month"
+                    ref={monthRef}
+                    className="date-field"
+                    inputMode="numeric"
+                    autoComplete="bday-month"
+                    placeholder="MM"
+                    maxLength={2}
+                    value={birthMonth}
+                    onChange={(event) =>
+                      handleFieldChange(
+                        event.target.value,
+                        2,
+                        setBirthMonth,
+                        yearRef
+                      )
+                    }
+                    onKeyDown={(event) =>
+                      handleFieldKeyDown(event, birthMonth, dayRef)
+                    }
+                    aria-label="Birth month"
+                  />
+                  <span className="date-separator">/</span>
+                  <input
+                    ref={yearRef}
+                    className="date-field date-field--year"
+                    inputMode="numeric"
+                    autoComplete="bday-year"
+                    placeholder="YYYY"
+                    maxLength={4}
+                    value={birthYear}
+                    onChange={(event) =>
+                      handleFieldChange(event.target.value, 4, setBirthYear)
+                    }
+                    onKeyDown={(event) =>
+                      handleFieldKeyDown(event, birthYear, dayRef)
+                    }
+                    aria-label="Birth year"
+                  />
+                </div>
               </div>
               {error ? <div className="ui-error">{error}</div> : null}
               <div className="ui-actions ui-actions--tape">
