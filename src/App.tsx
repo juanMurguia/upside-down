@@ -3,7 +3,8 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import Scene from "./Scene";
-import { clampYearTo80s, pickTrackForYear, type Track } from "./tracks";
+import { fetchTrackForYear } from "./musicApi";
+import { clampYearTo80s, type Track } from "./tracks";
 import "./App.css";
 
 const MUSIC_AGE = 16;
@@ -82,7 +83,7 @@ export default function App() {
   const [shareOpen, setShareOpen] = useState(false);
   const [shareNotice, setShareNotice] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const loadingTimeoutRef = useRef<number | null>(null);
+  const requestIdRef = useRef(0);
 
   const isPreviewAvailable = Boolean(activeTrack?.previewUrl);
   const showCard = Boolean(activeTrack && !isLoading);
@@ -96,14 +97,6 @@ export default function App() {
   }, [activeTrack]);
 
   useEffect(() => {
-    return () => {
-      if (loadingTimeoutRef.current !== null) {
-        window.clearTimeout(loadingTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     const audio = audioRef.current;
     if (!audio) {
       return;
@@ -115,7 +108,7 @@ export default function App() {
     audio.load();
   }, [activeTrack?.previewUrl]);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!birthdate) {
       setError("Please enter your birthdate.");
       return;
@@ -131,20 +124,32 @@ export default function App() {
     setHasGenerated(true);
     setIsLoading(true);
     setShareOpen(false);
-    setMusicYear(null);
     setActiveTrack(null);
+    setMusicYear(null);
     setShareNotice("");
+    setIsPlaying(false);
+    setProgress(0);
 
-    if (loadingTimeoutRef.current !== null) {
-      window.clearTimeout(loadingTimeoutRef.current);
-    }
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
 
-    loadingTimeoutRef.current = window.setTimeout(() => {
-      const selectedTrack = pickTrackForYear(year);
+    try {
+      const selectedTrack = await fetchTrackForYear(year);
+      if (requestIdRef.current !== requestId) {
+        return;
+      }
       setMusicYear(year);
       setActiveTrack(selectedTrack);
-      setIsLoading(false);
-    }, 800);
+    } catch {
+      if (requestIdRef.current !== requestId) {
+        return;
+      }
+      setError("Unable to fetch a track right now. Please try again.");
+    } finally {
+      if (requestIdRef.current === requestId) {
+        setIsLoading(false);
+      }
+    }
   };
 
   const handleTogglePlay = () => {

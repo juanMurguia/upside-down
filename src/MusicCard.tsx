@@ -15,7 +15,7 @@ type MusicCardProps = {
 export default function MusicCard({ track, visible }: MusicCardProps) {
   const groupRef = useRef<THREE.Group>(null);
   const { gl, viewport } = useThree();
-  const coverUrl = track?.coverUrl ?? DEFAULT_COVER;
+  const coverUrl = track?.coverUrl || DEFAULT_COVER;
   const texture = useTexture(coverUrl);
   const basePosition = useMemo(() => new THREE.Vector3(0, 2, 24), []);
   const baseRotation = useMemo(() => new THREE.Euler(0, 0, 0), []);
@@ -64,10 +64,10 @@ export default function MusicCard({ track, visible }: MusicCardProps) {
           color="#4e0202"
           metalness={0.6}
           roughness={0.25}
-          emissive="#4e0202"
-          emissiveIntensity={0.5}
+          emissive="#d02424"
+          emissiveIntensity={3}
         />
-        <Edges color="#930813" />
+        <Edges color="#ff2f3c" isMesh />
       </RoundedBox>
       <mesh position={[-1.9, 0.05, 0.25]}>
         <planeGeometry args={[3.4, 3.4]} />

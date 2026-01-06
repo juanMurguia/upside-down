@@ -4,7 +4,8 @@ export type Track = {
   year: number;
   coverUrl: string;
   previewUrl: string;
-  spotifyUrl: string;
+  sourceUrl?: string;
+  album?: string;
 };
 
 const createCoverUrl = (
@@ -36,14 +37,13 @@ const createCoverUrl = (
 
 const previewUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
-export const tracks: Track[] = [
+export const fallbackTracks: Track[] = [
   {
     title: "Neon River",
     artist: "The Signal Lamps",
     year: 1980,
     coverUrl: createCoverUrl("Neon River", "The Signal Lamps", 1980, "#ff6b7a"),
     previewUrl,
-    spotifyUrl: "https://open.spotify.com/track/mock-1980",
   },
   {
     title: "Afterglow Arcade",
@@ -51,7 +51,6 @@ export const tracks: Track[] = [
     year: 1981,
     coverUrl: createCoverUrl("Afterglow Arcade", "Laserline", 1981, "#ff8b3d"),
     previewUrl: "",
-    spotifyUrl: "https://open.spotify.com/track/mock-1981",
   },
   {
     title: "Magneto Hearts",
@@ -59,7 +58,6 @@ export const tracks: Track[] = [
     year: 1982,
     coverUrl: createCoverUrl("Magneto Hearts", "Midnight Circuit", 1982, "#ff5fd7"),
     previewUrl,
-    spotifyUrl: "https://open.spotify.com/track/mock-1982",
   },
   {
     title: "Static on the Coast",
@@ -67,7 +65,6 @@ export const tracks: Track[] = [
     year: 1983,
     coverUrl: createCoverUrl("Static on the Coast", "Velvet Relay", 1983, "#5cf5ff"),
     previewUrl,
-    spotifyUrl: "https://open.spotify.com/track/mock-1983",
   },
   {
     title: "Dreams in Chrome",
@@ -75,7 +72,6 @@ export const tracks: Track[] = [
     year: 1984,
     coverUrl: createCoverUrl("Dreams in Chrome", "Echo Avenue", 1984, "#8affc1"),
     previewUrl,
-    spotifyUrl: "https://open.spotify.com/track/mock-1984",
   },
   {
     title: "Analog Pulse",
@@ -83,7 +79,6 @@ export const tracks: Track[] = [
     year: 1985,
     coverUrl: createCoverUrl("Analog Pulse", "Night Operator", 1985, "#ffd65c"),
     previewUrl,
-    spotifyUrl: "https://open.spotify.com/track/mock-1985",
   },
   {
     title: "Red Room FM",
@@ -91,7 +86,6 @@ export const tracks: Track[] = [
     year: 1986,
     coverUrl: createCoverUrl("Red Room FM", "Hollow Cities", 1986, "#ff4a5e"),
     previewUrl: "",
-    spotifyUrl: "https://open.spotify.com/track/mock-1986",
   },
   {
     title: "Satellite Youth",
@@ -99,7 +93,6 @@ export const tracks: Track[] = [
     year: 1987,
     coverUrl: createCoverUrl("Satellite Youth", "Glass Comet", 1987, "#79a7ff"),
     previewUrl,
-    spotifyUrl: "https://open.spotify.com/track/mock-1987",
   },
   {
     title: "Cold Summer Drive",
@@ -107,7 +100,6 @@ export const tracks: Track[] = [
     year: 1988,
     coverUrl: createCoverUrl("Cold Summer Drive", "Polaroid Sunset", 1988, "#7ae0ff"),
     previewUrl,
-    spotifyUrl: "https://open.spotify.com/track/mock-1988",
   },
   {
     title: "Tide of Light",
@@ -115,22 +107,27 @@ export const tracks: Track[] = [
     year: 1989,
     coverUrl: createCoverUrl("Tide of Light", "Nova Department", 1989, "#a78bff"),
     previewUrl,
-    spotifyUrl: "https://open.spotify.com/track/mock-1989",
   },
 ];
 
-export const pickTrackForYear = (year: number) => {
-  const exact = tracks.find((track) => track.year === year);
+export const pickFallbackTrackForYear = (year: number) => {
+  const exact = fallbackTracks.find((track) => track.year === year);
   if (exact) {
     return exact;
   }
 
-  return tracks.reduce((closest, track) => {
+  return fallbackTracks.reduce((closest, track) => {
     const currentDiff = Math.abs(track.year - year);
     const closestDiff = Math.abs(closest.year - year);
     return currentDiff < closestDiff ? track : closest;
-  }, tracks[0]);
+  }, fallbackTracks[0]);
 };
 
 export const clampYearTo80s = (year: number) =>
   Math.min(1989, Math.max(1980, year));
+
+export const buildFallbackCover = (
+  title: string,
+  artist: string,
+  year: number
+) => createCoverUrl(title, artist, year, "#ff4a5e");
