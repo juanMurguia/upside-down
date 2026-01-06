@@ -1,6 +1,7 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Pause, Play, Share2 } from "lucide-react";
+import html2canvas from "html2canvas";
+import { Download, Pause, Play, Share2 } from "lucide-react";
 import {
   useEffect,
   useMemo,
@@ -90,8 +91,8 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [shareOpen, setShareOpen] = useState(false);
-  const [shareNotice, setShareNotice] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const requestIdRef = useRef(0);
   const dayRef = useRef<HTMLInputElement | null>(null);
   const monthRef = useRef<HTMLInputElement | null>(null);
@@ -197,7 +198,6 @@ export default function App() {
     setShareOpen(false);
     setActiveTrack(null);
     setMusicYear(null);
-    setShareNotice("");
     setIsPlaying(false);
     setProgress(0);
 
@@ -265,21 +265,70 @@ export default function App() {
     }
   };
 
-  const handleShareCopy = async (value: string) => {
-    if (!value) {
+  const handleDownloadImage = async () => {
+    const renderer = rendererRef.current;
+    if (!renderer) {
       return;
     }
 
-    try {
-      await navigator.clipboard.writeText(value);
-      setShareNotice("Copied.");
-    } catch {
-      setShareNotice("Copy failed.");
+    const sourceCanvas = renderer.domElement;
+    const width = sourceCanvas.width;
+    const height = sourceCanvas.height;
+    const size = Math.min(width, height);
+    if (!size) {
+      return;
     }
-  };
 
-  const handleShareLink = () => {
-    handleShareCopy(window.location.href);
+    const output = document.createElement("canvas");
+    output.width = size;
+    output.height = size;
+    const context = output.getContext("2d");
+    if (!context) {
+      return;
+    }
+
+    const offsetX = Math.floor((width - size) / 2);
+    const offsetY = Math.floor((height - size) / 2);
+    context.drawImage(
+      sourceCanvas,
+      offsetX,
+      offsetY,
+      size,
+      size,
+      0,
+      0,
+      size,
+      size
+    );
+
+    const textElement = document.querySelector(
+      ".music-card__html"
+    ) as HTMLElement | null;
+    if (textElement) {
+      const rect = textElement.getBoundingClientRect();
+      const canvasRect = sourceCanvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      try {
+        const textCanvas = await html2canvas(textElement, {
+          backgroundColor: null,
+          scale: dpr,
+        });
+        const drawX = Math.floor((rect.left - canvasRect.left) * dpr - offsetX);
+        const drawY = Math.floor((rect.top - canvasRect.top) * dpr - offsetY);
+        const drawW = Math.floor(rect.width * dpr);
+        const drawH = Math.floor(rect.height * dpr);
+
+        context.drawImage(textCanvas, drawX, drawY, drawW, drawH);
+      } catch {
+        return;
+      }
+    }
+
+    const link = document.createElement("a");
+    link.href = output.toDataURL("image/png");
+    link.download = "rift-card.png";
+    link.click();
   };
 
   return (
@@ -291,9 +340,13 @@ export default function App() {
         gl={{
           antialias: true,
           powerPreference: "high-performance",
+          preserveDrawingBuffer: true,
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.0,
           outputColorSpace: THREE.SRGBColorSpace,
+        }}
+        onCreated={({ gl }) => {
+          rendererRef.current = gl;
         }}
       >
         <MousePanControls limit={2} />
@@ -343,9 +396,7 @@ export default function App() {
                         monthRef
                       )
                     }
-                    onKeyDown={(event) =>
-                      handleFieldKeyDown(event, birthDay)
-                    }
+                    onKeyDown={(event) => handleFieldKeyDown(event, birthDay)}
                     aria-label="Birth day"
                   />
                   <span className="date-separator">/</span>
@@ -459,24 +510,12 @@ export default function App() {
               <button
                 className="primary-button"
                 type="button"
-                onClick={() => handleShareCopy(shareCaption)}
+                onClick={handleDownloadImage}
               >
-                Copy text
-              </button>
-              <button
-                className="secondary-button"
-                type="button"
-                onClick={handleShareLink}
-              >
-                Copy link
-              </button>
-              <button className="ghost-button" type="button" disabled>
-                Coming soon
+                <Download size={18} strokeWidth={2.2} />
+                Download image
               </button>
             </div>
-            {shareNotice ? (
-              <div className="modal-note">{shareNotice}</div>
-            ) : null}
             <button
               className="modal-close"
               type="button"

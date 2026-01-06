@@ -62,12 +62,12 @@ export default function MusicCard({ track, visible }: MusicCardProps) {
       <RoundedBox args={[8.2, 5.3, 0.38]} radius={0.45} smoothness={6}>
         <meshStandardMaterial
           color="#4e0202"
-          metalness={0.6}
+          metalness={1}
           roughness={0.25}
-          emissive="#d02424"
-          emissiveIntensity={3}
+          emissive="#820d0d"
+          emissiveIntensity={1}
         />
-        <Edges color="#ff2f3c" isMesh />
+        <Edges color="#ff0a1f" linewidth={3} />
       </RoundedBox>
       <mesh position={[-1.9, 0.05, 0.25]}>
         <planeGeometry args={[3.4, 3.4]} />
@@ -77,7 +77,7 @@ export default function MusicCard({ track, visible }: MusicCardProps) {
         <planeGeometry args={[3.6, 3.6]} />
         <meshBasicMaterial color="#ffffff" transparent opacity={0.05} />
       </mesh>
-      <Html transform position={[1.7, 0.3, 0.26]} distanceFactor={7.8}>
+      <Html transform position={[2, 0.3, 0.26]} distanceFactor={7.8}>
         <div className="music-card__html">
           <div className="music-card__label">Preview</div>
           <div className="music-card__title">{track.title}</div>
