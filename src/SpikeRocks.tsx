@@ -8,7 +8,7 @@ type SpikeInstance = {
   color: THREE.Color;
 };
 
-const BASE_COLOR = new THREE.Color("#17080e");
+const BASE_COLOR = new THREE.Color("#380707");
 
 export default function SpikeRocks() {
   const meshRef = useRef<THREE.InstancedMesh>(null);

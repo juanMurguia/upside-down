@@ -23,8 +23,8 @@ export default function Scene({ activeTrack, showCard }: SceneProps) {
   return (
     <>
       <SkyDome />
-      <fogExp2 attach="fog" args={["#061f36", 0.002]} />
-      <ambientLight intensity={Math.PI / 1.5} color="#dbe6ff" />
+      <fogExp2 attach="fog" args={["#360608", 0.002]} />
+      <ambientLight intensity={4} color="#ff4b55" />
       <SpikeRocks />
       <spotLight
         position={[0, 40, 0]}
@@ -32,11 +32,11 @@ export default function Scene({ activeTrack, showCard }: SceneProps) {
         distance={45}
         penumbra={1}
         intensity={100}
-        color="#7aa7ff"
+        color="#ff4b55"
       />
       <spotLight
         position={[-20, 0, 10]}
-        color="#112660"
+        color="#601111"
         angle={0.2}
         decay={0}
         penumbra={-1}
@@ -44,7 +44,7 @@ export default function Scene({ activeTrack, showCard }: SceneProps) {
       />
       <spotLight
         position={[20, -40, 10]}
-        color="#112660"
+        color="#601111"
         angle={0.2}
         decay={0}
         penumbra={-1}
@@ -61,7 +61,7 @@ export default function Scene({ activeTrack, showCard }: SceneProps) {
       />
       <pointLight
         position={[8, 6, 20]}
-        color="#7aa7ff"
+        color="#ff4b55"
         intensity={3.2}
         decay={1.5}
         distance={50}
@@ -86,10 +86,10 @@ export default function Scene({ activeTrack, showCard }: SceneProps) {
       >
         <planeGeometry args={[2000, 2000]} />
         <meshStandardMaterial
-          color="#07070c"
+          color="#0c0707"
           roughness={1}
           metalness={0}
-          emissive="#02020a"
+          emissive="#0a0202"
           emissiveIntensity={0.2}
         />
       </mesh>

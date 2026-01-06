@@ -3,10 +3,10 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { Pause, Play, Share2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import "./App.css";
 import Scene from "./Scene";
 import { fetchTrackForYear } from "./musicApi";
 import { clampYearTo80s, type Track } from "./tracks";
-import "./App.css";
 
 const MUSIC_AGE = 16;
 const PREVIEW_DURATION = 30;
@@ -232,33 +232,49 @@ export default function App() {
       <div className="ui-layer">
         {showPanels ? (
           <div className="ui-stack">
-            <div className="ui-panel">
-              <div className="ui-title">Your 80s Song</div>
-              <div className="ui-subtitle">
-                Drop your birthdate to tune into your retro frequency.
+            <div className="ui-panel ui-panel--cassette">
+              <div className="cassette-header">
+                <div className="ui-title">Escape Vecna's Curse</div>
+                <div className="ui-subtitle">
+                  Enter your birthdate to find the one song that will pull you
+                  back from the Upside Down.
+                </div>
               </div>
-              <label className="ui-label" htmlFor="birthdate">
-                Birthdate
-              </label>
-              <input
-                id="birthdate"
-                type="date"
-                value={birthdate}
-                onChange={(event) => {
-                  setBirthdate(event.target.value);
-                  setError("");
-                }}
-                className="ui-input"
-              />
+              <div className="cassette-body">
+                <div className="cassette-reel cassette-reel--left">
+                  <span className="cassette-reel-hole" />
+                </div>
+                <div className="cassette-window">
+                  <span className="cassette-window-band" />
+                </div>
+                <div className="cassette-reel cassette-reel--right">
+                  <span className="cassette-reel-hole" />
+                </div>
+              </div>
+              <div className="cassette-label">
+                <label className="ui-label" htmlFor="birthdate">
+                  Birthdate
+                </label>
+                <input
+                  id="birthdate"
+                  type="date"
+                  value={birthdate}
+                  onChange={(event) => {
+                    setBirthdate(event.target.value);
+                    setError("");
+                  }}
+                  className="ui-input ui-input--label"
+                />
+              </div>
               {error ? <div className="ui-error">{error}</div> : null}
-              <div className="ui-actions">
+              <div className="ui-actions ui-actions--tape">
                 <button
-                  className="primary-button"
+                  className="primary-button tape-button"
                   type="button"
                   onClick={handleGenerate}
                   disabled={isLoading}
                 >
-                  Generate
+                  Start the Tape
                 </button>
                 {hasGenerated ? (
                   <button
