@@ -400,7 +400,14 @@ export default function App() {
                         monthRef
                       )
                     }
-                    onKeyDown={(event) => handleFieldKeyDown(event, birthDay)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        handleGenerate();
+                        return;
+                      }
+                      handleFieldKeyDown(event, birthDay);
+                    }}
                     aria-label="Birth day"
                   />
                   <span className="date-separator">/</span>
@@ -421,9 +428,14 @@ export default function App() {
                         yearRef
                       )
                     }
-                    onKeyDown={(event) =>
-                      handleFieldKeyDown(event, birthMonth, dayRef)
-                    }
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        handleGenerate();
+                        return;
+                      }
+                      handleFieldKeyDown(event, birthMonth, dayRef);
+                    }}
                     aria-label="Birth month"
                   />
                   <span className="date-separator">/</span>
@@ -438,9 +450,14 @@ export default function App() {
                     onChange={(event) =>
                       handleFieldChange(event.target.value, 4, setBirthYear)
                     }
-                    onKeyDown={(event) =>
-                      handleFieldKeyDown(event, birthYear, dayRef)
-                    }
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        handleGenerate();
+                        return;
+                      }
+                      handleFieldKeyDown(event, birthYear, dayRef);
+                    }}
                     aria-label="Birth year"
                   />
                 </div>
