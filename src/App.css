@@ -58,6 +58,45 @@
   font-family: var(--font-body);
 }
 
+.ambient-controls {
+  position: absolute;
+  top: clamp(0.9rem, 2vw, 1.4rem);
+  right: clamp(0.9rem, 2vw, 1.4rem);
+  pointer-events: auto;
+}
+
+.ambient-button {
+  font-size: 0.7rem;
+  padding: 0.45rem 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 120, 135, 0.4);
+}
+
+.ambient-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.signature-tag {
+  position: absolute;
+  left: clamp(0.9rem, 2vw, 1.4rem);
+  bottom: clamp(0.9rem, 2vw, 1.4rem);
+  font-size: 0.7rem;
+  color: rgba(224, 214, 210, 0.7);
+  pointer-events: auto;
+}
+
+.signature-tag a {
+  color: rgba(255, 170, 180, 0.9);
+  text-decoration: none;
+}
+
+.signature-tag a:hover {
+  text-decoration: underline;
+}
+
 .ui-stack {
   display: flex;
   flex-direction: column;
@@ -338,7 +377,7 @@
   font-family: inherit;
   border: none;
   cursor: pointer;
-  border-radius: 999px;
+  border-radius: 8px;
   padding: 0.6rem 1.2rem;
   font-weight: 600;
   font-size: 0.95rem;

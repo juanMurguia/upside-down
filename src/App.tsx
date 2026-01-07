@@ -13,6 +13,7 @@ import {
 import * as THREE from "three";
 import "./App.css";
 import Scene from "./Scene";
+import ticTac from "./assets/tic-tac.mp3";
 import { fetchTrackForYear } from "./musicApi";
 import { clampYearTo80s, type Track } from "./tracks";
 
@@ -91,7 +92,9 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [shareOpen, setShareOpen] = useState(false);
+  const [ambientEnabled, setAmbientEnabled] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const ambientAudioRef = useRef<HTMLAudioElement | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const requestIdRef = useRef(0);
   const dayRef = useRef<HTMLInputElement | null>(null);
@@ -120,6 +123,24 @@ export default function App() {
     setIsPlaying(false);
     audio.load();
   }, [activeTrack?.previewUrl]);
+
+  useEffect(() => {
+    const ambientAudio = ambientAudioRef.current;
+    if (!ambientAudio) {
+      return;
+    }
+
+    ambientAudio.volume = 0.45;
+
+    if (!ambientEnabled || isPlaying) {
+      ambientAudio.pause();
+      return;
+    }
+
+    ambientAudio.play().catch(() => {
+      setAmbientEnabled(false);
+    });
+  }, [ambientEnabled, isPlaying]);
 
   const sanitizeDigits = (value: string, maxLength: number) =>
     value.replace(/\D/g, "").slice(0, maxLength);
@@ -239,6 +260,11 @@ export default function App() {
       return;
     }
 
+    const ambientAudio = ambientAudioRef.current;
+    if (ambientAudio) {
+      ambientAudio.pause();
+    }
+
     audio
       .play()
       .then(() => {
@@ -263,6 +289,10 @@ export default function App() {
       audio.currentTime = PREVIEW_DURATION;
       setIsPlaying(false);
     }
+  };
+
+  const handleToggleAmbient = () => {
+    setAmbientEnabled((prev) => !prev);
   };
 
   const handleDownloadImage = async () => {
@@ -357,6 +387,16 @@ export default function App() {
         />
       </Canvas>
       <div className="ui-layer">
+        <div className="ambient-controls">
+          <button
+            className="ghost-button ambient-button"
+            type="button"
+            onClick={handleToggleAmbient}
+            aria-pressed={ambientEnabled}
+          >
+            Ambience: {ambientEnabled ? "On" : "Off"}
+          </button>
+        </div>
         {showPanels ? (
           <div className="ui-stack">
             <div className="ui-panel ui-panel--cassette">
@@ -521,6 +561,16 @@ export default function App() {
             </button>
           </div>
         ) : null}
+        <div className="signature-tag">
+          Made with {"<3"} by{" "}
+          <a
+            href="https://www.linkedin.com/in/juan-cruz-murguia"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Juan
+          </a>
+        </div>
       </div>
       {shareOpen ? (
         <div className="modal-backdrop" role="dialog" aria-modal="true">
@@ -557,6 +607,7 @@ export default function App() {
         onEnded={() => setIsPlaying(false)}
         preload="metadata"
       />
+      <audio ref={ambientAudioRef} src={ticTac} loop preload="auto" />
     </div>
   );
 }
