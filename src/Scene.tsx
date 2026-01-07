@@ -100,7 +100,11 @@ export default function Scene({
       {isBright ? null : <UpsideDownParticles />}
       <Suspense fallback={null}>
         <CloudLayer variant={isBright ? "day" : "rift"} />
-        <MusicCard track={activeTrack} visible={showCard} />
+        <MusicCard
+          track={activeTrack}
+          visible={showCard}
+          tone={isBright ? "day" : "rift"}
+        />
       </Suspense>
       {isBright ? null : <RedStormLights />}
       <Sparkles

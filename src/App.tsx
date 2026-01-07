@@ -363,7 +363,7 @@ export default function App() {
   };
 
   return (
-    <div className="app">
+    <div className={`app${isPlaying ? " app--day" : ""}`}>
       <Canvas
         shadows
         dpr={[1, 2]}

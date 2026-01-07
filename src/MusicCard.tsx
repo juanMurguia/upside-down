@@ -10,9 +10,25 @@ const DEFAULT_COVER =
 type MusicCardProps = {
   track: Track | null;
   visible: boolean;
+  tone?: "rift" | "day";
 };
 
-export default function MusicCard({ track, visible }: MusicCardProps) {
+const CARD_PALETTE = {
+  rift: {
+    body: "#4e0202",
+    edge: new THREE.Color(5, 0.2, 0.3),
+  },
+  day: {
+    body: "#d7e3ee",
+    edge: new THREE.Color(0.55, 0.75, 1),
+  },
+} as const;
+
+export default function MusicCard({
+  track,
+  visible,
+  tone = "rift",
+}: MusicCardProps) {
   const groupRef = useRef<THREE.Group>(null);
   const { gl, viewport } = useThree();
   const coverUrl = track?.coverUrl || DEFAULT_COVER;
@@ -20,6 +36,7 @@ export default function MusicCard({ track, visible }: MusicCardProps) {
   const basePosition = useMemo(() => new THREE.Vector3(0, 2, 24), []);
   const baseRotation = useMemo(() => new THREE.Euler(0, 0, 0), []);
   const cardScale = Math.min(1, viewport.width / 12);
+  const cardPalette = CARD_PALETTE[tone];
 
   useEffect(() => {
     texture.colorSpace = THREE.SRGBColorSpace;
@@ -60,9 +77,13 @@ export default function MusicCard({ track, visible }: MusicCardProps) {
   return (
     <group ref={groupRef} scale={[cardScale, cardScale, cardScale]}>
       <RoundedBox args={[8.2, 5.3, 0.38]} radius={0.45} smoothness={6}>
-        <meshStandardMaterial color="#4e0202" metalness={1} roughness={0.25} />
+        <meshStandardMaterial
+          color={cardPalette.body}
+          metalness={1}
+          roughness={0.25}
+        />
         <Edges
-          color={new THREE.Color(5, 0.2, 0.3)}
+          color={cardPalette.edge}
           linewidth={3}
           toneMapped={false}
         />
