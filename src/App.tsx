@@ -117,6 +117,7 @@ export default function App() {
     if (!audio) {
       return;
     }
+    audio.volume = 0.5;
     audio.pause();
     audio.currentTime = 0;
     setProgress(0);
